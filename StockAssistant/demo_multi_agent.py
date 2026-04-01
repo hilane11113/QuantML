@@ -197,14 +197,22 @@ def analyze(symbol='TSLA', debate_rounds=2, use_mock=False):
         theta = s.get('theta', 0)
 
         # 策略构成
-        if stype == 'Iron Condor':
+        if stype == 'Short Put':
+            # Short Put: 纯卖出，无买入腿
+            ss = s.get('short_strike', s.get('strike', '?'))
+            structure = f"卖${ss} PUT（无保护）"
+        elif stype == 'Iron Condor':
             sp = s.get('short_put') or s.get('short_strike', '?')
             lp = s.get('long_put') or s.get('long_strike', '?')
             sc = s.get('short_call', '?')
             lc = s.get('long_call', '?')
             structure = f"卖${sp}/买${lp}Put, 卖${sc}/买${lc}Call（4条腿）"
         elif s.get('short_strike') and s.get('long_strike'):
-            structure = f"卖${s.get('short_strike')}/买${s.get('long_strike')}"
+            # 如果 short == long，说明是 Short Put 误判，改为纯卖出
+            if s.get('short_strike') == s.get('long_strike'):
+                structure = f"卖${s.get('short_strike')} PUT（无保护）"
+            else:
+                structure = f"卖${s.get('short_strike')}/买${s.get('long_strike')}"
         elif s.get('strike'):
             structure = f"行权价${s.get('strike')}"
         else:
