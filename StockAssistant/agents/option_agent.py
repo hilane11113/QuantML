@@ -418,7 +418,11 @@ class OptionAgent:
                             'days_to_expiry': s.get('days'),
                             'actual_expiry_date': s.get('expiry'),
                             'decision': s.get('decision', ''),
+                            'predicted_win_rate': s.get('predicted_win_rate'),
+                            'win_rate_confidence': s.get('win_rate_confidence'),
+                            'win_rate_n': s.get('win_rate_n'),
                         }
+                        strategies.append(s_out)
                     else:
                         s_out = {
                             'type': TYPE_MAP.get(stype_name, stype_name),
@@ -427,18 +431,22 @@ class OptionAgent:
                             'short_strike': s.get('short_strike') or s.get('strike'),
                             'long_strike': s.get('long_strike') or s.get('strike'),
                             'credit': s.get('premium'),
-                            'max_loss': s.get('max_loss'),
                             'max_profit': s.get('max_profit'),
                             'theta': s.get('theta'),
                             'days_to_expiry': s.get('days'),
                             'actual_expiry_date': s.get('expiry'),
                             'decision': s.get('decision', ''),
+                            'predicted_win_rate': s.get('predicted_win_rate'),
+                            'win_rate_confidence': s.get('win_rate_confidence'),
+                            'win_rate_n': s.get('win_rate_n'),
                         }
-                    strategies.append(s_out)
+                        strategies.append(s_out)
             return strategies
 
         except Exception as e:
+            import traceback
             print(f"[OptionAgent] strategy_engine 调用失败: {e}", flush=True)
+            traceback.print_exc()
             return []
 
     def run(self, symbol='TSLA'):
@@ -470,7 +478,7 @@ class OptionAgent:
         """
         # 从 ctx 获取核心数据
         price = ctx.get('price') if ctx else None
-        iv = ctx.get('iv') if ctx else None
+        iv = ctx.get('iv', 35) if ctx else None
         vix_val = ctx.get('vix') if ctx else None
         option_chains = ctx.get('option_chains', []) if ctx else []
 
@@ -569,7 +577,10 @@ class OptionAgent:
                 'decision': decision,
                 'position': position,
                 'capital_efficiency': round(capital_efficiency, 2),
-                'threshold_used': threshold,  # 记录本次使用的动态阈值
+                'threshold_used': threshold,
+                'predicted_win_rate': s.get('predicted_win_rate'),
+                'win_rate_confidence': s.get('win_rate_confidence'),
+                'win_rate_n': s.get('win_rate_n'),
             })
 
         result = {

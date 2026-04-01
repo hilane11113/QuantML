@@ -814,6 +814,7 @@ def calculate_strategies_from_ctx(symbol, ctx):
             wr_mod.load_models()
         except Exception:
             pass
+    else:
 
     rsi = ctx.get('rsi')
 
@@ -822,7 +823,7 @@ def calculate_strategies_from_ctx(symbol, ctx):
         for s in strategies:
             short_strike = s.get('short_strike') or s.get('strike', price)
             otm_pct = (short_strike - price) / price * 100 if price else None
-            can_enter, level, reason = check_entry_filter(rsi, vix_val, otm_pct)
+            can_enter, level, reason = check_entry_filter(rsi, vix, otm_pct)
 
             if level == 'reject':
                 s['decision'] = '🔴禁止'
@@ -864,7 +865,7 @@ def calculate_strategies_from_ctx(symbol, ctx):
                 else:
                     strat_name = 'ShortPut'
                 wr = wr_mod.predict_win_rate(
-                    rsi=rsi, vix=vix_val, otm_pct=otm,
+                    rsi=rsi, vix=vix, otm_pct=otm,
                     trend=trend, strategy_type=strat_name,
                     holding_days=s.get('days', 14)
                 )
