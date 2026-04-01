@@ -1,0 +1,11 @@
+{
+  "R||S||I": {
+    "win_rate": 1.0,
+    "n": 4,
+    "real_n": 0,
+    "ci_low": 0.5101,
+    "ci_high": 1,
+    "total_pnl": 4505.53,
+    "avg_pnl": 1126.38
+  }
+}
