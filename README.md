@@ -130,3 +130,32 @@ result = predict_win_rate(
 ## ⚠️ 免责声明
 
 本项目仅供学习和研究使用，不构成投资建议。期权交易存在风险，实际亏损由投资者自行承担。
+
+---
+
+## 💻 开发环境
+
+**基于 Linux 开发**，当前运行在 Ubuntu (Kernel 6.8) + Python 3.12。
+
+### 系统依赖
+
+| 依赖 | 版本 | 用途 |
+|------|------|------|
+| Python | ≥3.10 | 运行环境 |
+| yfinance | ≥1.2.0 | 美股数据获取 |
+| requests | - | HTTP 请求 |
+| scikit-learn | - | ML 模型 |
+| scipy | - | 统计计算 |
+| Mihomo | - | 代理（VPN） |
+| git | - | 版本控制 |
+
+### 代理配置
+
+项目使用 Mihomo（代理客户端），代理地址 `http://127.0.0.1:7897`。配置位于 `~/.openclaw/clash.yaml`。yfinance 请求通过代理转发以避免 IP 限流。
+
+### 运行示例
+
+```bash
+cd StockAssistant
+python3 demo_multi_agent.py TSLA
+```
