@@ -7,32 +7,32 @@
 ## 🏗️ 项目架构
 
 ```
-QuantML/
+QuantML/  ← GitHub 仓库根目录
 │
 ├── StockAssistant/          # 多 Agent 分析引擎
 │   ├── agents/              # Agent 节点
 │   │   ├── tech_agent.py       # 技术分析（RSI/均线/支撑阻力）
-│   │   ├── social_agent.py      # 舆情分析（关键词+LLM+apewisdom）
-│   │   ├── option_agent.py     # 期权分析（VIX/IV/希腊值/策略评分）
-│   │   ├── researcher.py        # 多轮辩论（多空论点聚合）
-│   │   └── risk_agent.py       # 风险评估（仓位/止损/风控建议）
+│   │   ├── social_agent.py     # 舆情分析（关键词+LLM+apewisdom）
+│   │   ├── option_agent.py    # 期权分析（VIX/IV/希腊值/策略评分）
+│   │   ├── researcher.py       # 多轮辩论（多空论点聚合）
+│   │   └── risk_agent.py      # 风险评估（仓位/止损/风控建议）
 │   ├── strategy_engine.py     # 策略引擎（含胜率预测+入场过滤器）
 │   ├── unified_fetcher.py     # 统一数据获取（yfinance 一次拉取）
-│   └── demo_multi_agent.py   # 主入口：格式四输出
+│   └── demo_multi_agent.py  # 主入口，按格式四输出
 │
 ├── TSLA期权策略/            # 策略脚本（执行层）
 │   ├── multi_strategy_v2.py  # 多策略组合 V2
-│   ├── vertical_spread_v6.py # 垂直价差 V6
+│   ├── vertical_spread_v6.py  # 垂直价差 V6
 │   └── strategy_engine.py    # 策略引擎（引用 StockAssistant）
 │
 └── QuantML/                # ML 模块（预测层）
     ├── models/
-    │   ├── win_rate_predictor.py    # 胜率预测接口
-    │   ├── train_win_rate_model.py  # 训练脚本
-    │   ├── win_rate_table.json      # 32组合历史胜率表
-    │   └── win_rate_models.pkl       # LR+RF 模型
+    │   ├── win_rate_predictor.py   # 胜率预测接口
+    │   ├── train_win_rate_model.py # 训练脚本
+    │   ├── win_rate_table.json    # 32组合历史胜率表
+    │   └── win_rate_models.pkl    # LR+RF 模型
     └── data/
-        └── market_full.pkl          # TSLA 5年市场数据
+        └── market_full.pkl        # TSLA 5年市场数据
 ```
 
 ---
@@ -90,8 +90,10 @@ python3 multi_strategy_v2.py TSLA
 ### 胜率预测
 ```python
 from QuantML.models.win_rate_predictor import predict_win_rate
-result = predict_win_rate(rsi=35, vix=18, otm_pct=-7.6,
-                         trend='下跌', strategy_type='ShortPut')
+result = predict_win_rate(
+    rsi=35, vix=18, otm_pct=-7.6,
+    trend='下跌', strategy_type='ShortPut'
+)
 # result: {win_rate: 0.73, confidence: '中', n: 15, ci_low: 0.61, ci_high: 0.84}
 ```
 
@@ -101,21 +103,9 @@ result = predict_win_rate(rsi=35, vix=18, otm_pct=-7.6,
 
 | 触发 | 操作 |
 |------|------|
-| 新平仓交易 | 追加到 `期权记录.xlsx` → 同步训练 |
+| 新平仓交易 | 追加到交易记录 → 同步重训练 |
 | 每50笔真实交易 | 重新训练模型，ML权重提升 |
 | 每周 | `fetch_all_data.py --update` 更新市场数据 |
-
----
-
-## 📁 文件说明
-
-| 文件/目录 | 说明 |
-|-----------|------|
-| `StockAssistant/` | 多 Agent 核心逻辑 |
-| `TSLA期权策略/` | 策略执行脚本 |
-| `QuantML/models/` | 机器学习模块 |
-| `QuantML/data/` | 历史市场数据 |
-| `期权记录.xlsx` | 真实交易记录（本地，不上传）|
 
 ---
 
